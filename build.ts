@@ -54,6 +54,7 @@ const buildExtension = async (targetBrowser: Browser) => {
     entryPoints: ['src/service_worker/index.ts'],
     bundle: true,
     outdir: distPath('service_worker', targetBrowser),
+    loader: {'.css': 'text'},
     sourcemap: devFlag ? 'inline' : false,
   });
 
