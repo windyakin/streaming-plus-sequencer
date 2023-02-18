@@ -5,7 +5,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -27,8 +27,12 @@ jobs:
 
       - run: yarn package:${{ matrix.browser }}
 
+      - name: Get artifact file
+        id: artifact
+        run: echo "filepath=$(find web-ext-artifacts | grep .zip)" >> $GITHUB_OUTPUT
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.browser }}
-          path: web-ext-artifacts/
+          path: ${{ steps.artifact.outputs.filepath }}
