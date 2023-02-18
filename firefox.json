@@ -3,5 +3,8 @@
     "gecko": {
       "id": "streaming-plus-sequencer@windyakin.net"
     }
+  },
+  "background": {
+    "scripts": ["service_worker/index.js"]
   }
 }
