@@ -45,4 +45,28 @@ export default function () {
 
   controlBarElements[0].insertBefore(forwardButton, volumeControllerElements.item(0));
   controlBarElements[0].insertBefore(skipButton, volumeControllerElements.item(0));
+
+  const keyEventOverrideInput = document.createElement('input');
+  keyEventOverrideInput.setAttribute('type', 'text');
+  keyEventOverrideInput.setAttribute('id', 'sps-override-input');
+  keyEventOverrideInput.addEventListener('keydown', (event) => {
+    if (event.code === 'ArrowRight') {
+      skip();
+    }
+    if (event.code === 'ArrowLeft') {
+      forward();
+    }
+    if (event.code === 'Space') {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+  });
+  player.appendChild(keyEventOverrideInput);
+
+  player.addEventListener('click', () => {
+    keyEventOverrideInput.focus();
+  });
 };
