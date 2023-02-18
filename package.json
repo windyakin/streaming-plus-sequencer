@@ -9,7 +9,8 @@
     "lint": "eslint --ext .ts,.js,.vue src",
     "run:firefox": "web-ext run -s dist-firefox",
     "run:chrome": "web-ext run -s dist-chrome -t chromium",
-    "package:firefox": "web-ext build -s dist-firefox --overwrite-dest"
+    "package:firefox": "web-ext build -s dist-firefox --overwrite-dest",
+    "package:chrome": "web-ext build -s dist-chrome --overwrite-dest"
   },
   "devDependencies": {
     "@types/mustache": "4.2.2",
