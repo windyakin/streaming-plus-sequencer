@@ -1,0 +1,34 @@
+name: release
+
+on:
+  release:
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - firefox
+          - chrome
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - run: yarn
+
+      - run: yarn build:${{ matrix.browser }}
+
+      - run: yarn package:${{ matrix.browser }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.browser }}
+          path: web-ext-artifacts/
