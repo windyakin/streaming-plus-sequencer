@@ -34,15 +34,39 @@ export default function () {
   }
 
   const forwardButton = document.createElement('button');
-  forwardButton.setAttribute('class', 'vjs-play-control vjs-control vjs-button vjs-playing sps-forward-button');
+  forwardButton.setAttribute('class', 'vjs-play-control vjs-control vjs-button vjs-playing sps-button sps-forward-button');
   forwardButton.setAttribute('type', 'button');
   forwardButton.addEventListener('click', forward);
 
   const skipButton = document.createElement('button');
-  skipButton.setAttribute('class', 'vjs-play-control vjs-control vjs-button vjs-playing sps-skip-button');
+  skipButton.setAttribute('class', 'vjs-play-control vjs-control vjs-button vjs-playing sps-button sps-skip-button');
   skipButton.setAttribute('type', 'button');
   skipButton.addEventListener('click', skip);
 
   controlBarElements[0].insertBefore(forwardButton, volumeControllerElements.item(0));
   controlBarElements[0].insertBefore(skipButton, volumeControllerElements.item(0));
+
+  const keyEventOverrideInput = document.createElement('input');
+  keyEventOverrideInput.setAttribute('type', 'text');
+  keyEventOverrideInput.setAttribute('id', 'sps-override-input');
+  keyEventOverrideInput.addEventListener('keydown', (event) => {
+    if (event.code === 'ArrowRight') {
+      skip();
+    }
+    if (event.code === 'ArrowLeft') {
+      forward();
+    }
+    if (event.code === 'Space') {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+  });
+  player.appendChild(keyEventOverrideInput);
+
+  player.addEventListener('click', () => {
+    keyEventOverrideInput.focus();
+  });
 };
