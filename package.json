@@ -1,6 +1,6 @@
 {
   "name": "streaming-plus-sequencer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "scripts": {
     "build": "ts-node -T build.ts --firefox --chrome",
