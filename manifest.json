@@ -8,7 +8,6 @@
     "96": "icons/icon96.png"
   },
   "permissions": [
-    "tabs",
     "scripting"
   ],
   "host_permissions": [
