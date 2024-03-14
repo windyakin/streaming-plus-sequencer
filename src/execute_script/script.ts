@@ -15,11 +15,31 @@ export default function () {
     return;
   }
 
+  const controlDisplay = document.createElement('div');
+  controlDisplay.setAttribute('class', 'video-overlay-display');
+
+  player.appendChild(controlDisplay);
+
+  const startAnimation = () => {
+    controlDisplay.classList.remove('video-overlay-display-animation');
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        controlDisplay.classList.add('video-overlay-display-animation');
+      });
+    });
+  };
+
   const skip = () => {
     video.currentTime = video.currentTime + 10;
+    controlDisplay.classList.remove('video-overlay-display-forward');
+    controlDisplay.classList.add('video-overlay-display-skip');
+    startAnimation();
   }
   const forward = () => {
     video.currentTime = video.currentTime - 10;
+    controlDisplay.classList.remove('video-overlay-display-skip');
+    controlDisplay.classList.add('video-overlay-display-forward');
+    startAnimation();
   }
 
   const controlBarElements = document.getElementsByClassName('vjs-control-bar');
