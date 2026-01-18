@@ -38,6 +38,8 @@ const initSequencer = () => {
     'video-overlay-display-forward',
     'video-overlay-display-volume-up',
     'video-overlay-display-volume-down',
+    'video-overlay-display-play',
+    'video-overlay-display-pause',
   ] as const;
 
   type OverlayIconClass = (typeof overlayIconClasses)[number];
@@ -77,6 +79,60 @@ const initSequencer = () => {
     showOverlay('video-overlay-display-volume-down', `${Math.round(video.volume * 100)}%`);
   };
 
+  const togglePlayPause = () => {
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  };
+
+  // シーク中はplay/pauseオーバーレイを表示しない
+  let isSeeking = false;
+  let pendingPlayPauseTimer: number | null = null;
+
+  const cancelPendingPlayPause = () => {
+    if (pendingPlayPauseTimer !== null) {
+      clearTimeout(pendingPlayPauseTimer);
+      pendingPlayPauseTimer = null;
+    }
+  };
+
+  video.addEventListener('seeking', () => {
+    isSeeking = true;
+    cancelPendingPlayPause();
+  });
+
+  video.addEventListener('seeked', () => {
+    // seeked後も少し待ってからフラグを解除（play/pauseイベントが遅れて来る場合に対応）
+    pendingPlayPauseTimer = window.setTimeout(() => {
+      isSeeking = false;
+      pendingPlayPauseTimer = null;
+    }, 50);
+  });
+
+  // 動画の再生/一時停止イベントをリッスン
+  video.addEventListener('play', () => {
+    if (isSeeking) return;
+    cancelPendingPlayPause();
+    pendingPlayPauseTimer = window.setTimeout(() => {
+      if (!isSeeking) {
+        showOverlay('video-overlay-display-play');
+      }
+      pendingPlayPauseTimer = null;
+    }, 50);
+  });
+
+  video.addEventListener('pause', () => {
+    if (isSeeking) return;
+    cancelPendingPlayPause();
+    pendingPlayPauseTimer = window.setTimeout(() => {
+      if (!isSeeking) {
+        showOverlay('video-overlay-display-pause');
+      }
+      pendingPlayPauseTimer = null;
+    }, 50);
+  });
 
   const controlBarElements = document.getElementsByClassName('vjs-control-bar');
   const volumeControllerElements = document.getElementsByClassName('vjs-volume-panel');
@@ -112,11 +168,7 @@ const initSequencer = () => {
         volumeDown();
       }
       if (event.code === 'Space') {
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
+        togglePlayPause();
       }
     });
     player.appendChild(keyEventOverrideInput);
