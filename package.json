@@ -25,7 +25,7 @@
     "prettier": "3.4.2",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "web-ext": "8.4.0",
+    "web-ext": "9.2.0",
     "webextension-polyfill": "0.12.0"
   }
 }
