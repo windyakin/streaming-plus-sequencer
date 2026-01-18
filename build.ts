@@ -1,70 +1,57 @@
-// Based on https://github.com/hiterm/web-ext-react-template
-// Copyright (c) 2021 htlsne
-
-import { build } from 'esbuild';
+import { build, context } from 'esbuild';
 import { promises as fs } from 'fs';
+import { watch } from 'fs';
 import path from 'path';
 
-const devFlag = process.argv.includes('--dev');
-const chromeFlag = process.argv.includes('--chrome');
-const firefoxFlag = process.argv.includes('--firefox');
+const watchFlag = process.argv.includes('--watch');
+const devFlag = process.argv.includes('--dev') || watchFlag;
 
-type Browser = 'firefox' | 'chrome';
+const distDir = 'dist';
 
-const distDir = (targetBrowser: Browser) => {
-  switch (targetBrowser) {
-    case 'firefox':
-      return 'dist-firefox';
-    case 'chrome':
-      return 'dist-chrome';
-  }
+const distPath = (relPath: string) => path.join(distDir, relPath);
+
+const copyStaticFiles = async () => {
+  await fs.copyFile('manifest.json', distPath('manifest.json'));
+  await fs.copyFile('src/content_scripts/style.css', distPath('content_scripts/style.css'));
+  await fs.cp('src/icons', distPath('icons'), { recursive: true });
 };
 
-const distPath = (relPath: string, targetBrowser: Browser) =>
-  path.join(distDir(targetBrowser), relPath);
+const buildExtension = async () => {
+  await fs.mkdir(distPath('icons'), { recursive: true });
+  await fs.mkdir(distPath('content_scripts'), { recursive: true });
 
-const makeManifestFile = async (targetBrowser: Browser) => {
-  const baseManifestJson = JSON.parse(
-    await fs.readFile('manifest.json', 'utf8')
-  );
-  if (targetBrowser === 'firefox') {
-    const firefoxJson = JSON.parse(await fs.readFile('firefox.json', 'utf8'));
-    const manifestJson = { ...baseManifestJson, ...firefoxJson };
-    fs.writeFile(
-      distPath('manifest.json', targetBrowser),
-      JSON.stringify(manifestJson, null, 1)
-    );
-  } else if (targetBrowser === 'chrome') {
-    const chromeJson = JSON.parse(await fs.readFile('chrome.json', 'utf8'));
-    const manifestJson = { ...baseManifestJson, ...chromeJson };
-    fs.writeFile(
-      distPath('manifest.json', targetBrowser),
-      JSON.stringify(manifestJson, null, 1)
-    );
+  if (watchFlag) {
+    const ctx = await context({
+      entryPoints: ['src/content_scripts/index.ts'],
+      bundle: true,
+      outdir: distPath('content_scripts'),
+      sourcemap: 'inline',
+    });
+
+    await ctx.watch();
+    console.log('Watching for TypeScript changes...');
+
+    await copyStaticFiles();
+
+    watch('src/content_scripts/style.css', async () => {
+      await fs.copyFile('src/content_scripts/style.css', distPath('content_scripts/style.css'));
+      console.log('Copied style.css');
+    });
+
+    watch('manifest.json', async () => {
+      await fs.copyFile('manifest.json', distPath('manifest.json'));
+      console.log('Copied manifest.json');
+    });
   } else {
-    fs.copyFile('manifest.json', distPath('manifest.json', targetBrowser));
+    await build({
+      entryPoints: ['src/content_scripts/index.ts'],
+      bundle: true,
+      outdir: distPath('content_scripts'),
+      sourcemap: devFlag ? 'inline' : false,
+    });
+
+    await copyStaticFiles();
   }
 };
 
-const buildExtension = async (targetBrowser: Browser) => {
-  await fs.mkdir(distPath('icons', targetBrowser), { recursive: true });
-
-  await fs.mkdir(distPath('service_worker', targetBrowser), { recursive: true });
-  build({
-    entryPoints: ['src/service_worker/index.ts'],
-    bundle: true,
-    outdir: distPath('service_worker', targetBrowser),
-    loader: {'.css': 'text'},
-    sourcemap: devFlag ? 'inline' : false,
-  });
-
-  makeManifestFile(targetBrowser);
-  fs.cp('src/icons', distPath('icons', targetBrowser), { recursive: true });
-};
-
-if (firefoxFlag) {
-  buildExtension('firefox');
-}
-if (chromeFlag) {
-  buildExtension('chrome');
-}
+buildExtension();

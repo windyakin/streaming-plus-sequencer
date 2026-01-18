@@ -22,22 +22,13 @@ jobs:
 
   build:
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        browser:
-          - firefox
-          - chrome
-        node:
-          - 22.x
-
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22.x
 
       - run: npm ci
 
-      - run: npm run build:${{ matrix.browser }}
+      - run: npm run build

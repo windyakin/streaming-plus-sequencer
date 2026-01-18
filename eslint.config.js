@@ -6,7 +6,7 @@ const globals = require('globals');
 
 module.exports = [
   {
-    ignores: ['node_modules/**', 'dist-firefox/**', 'dist-chrome/**'],
+    ignores: ['node_modules/**', 'dist/**'],
   },
   eslint.configs.recommended,
   {
@@ -37,19 +37,10 @@ module.exports = [
     },
   },
   {
-    files: ['src/execute_script/**/*.ts'],
+    files: ['src/content_scripts/**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.browser,
-      },
-    },
-  },
-  {
-    files: ['src/service_worker/**/*.ts'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.webextensions,
       },
     },
   },

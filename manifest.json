@@ -7,13 +7,17 @@
     "48": "icons/icon48.png",
     "96": "icons/icon96.png"
   },
-  "permissions": [
-    "scripting"
+  "content_scripts": [
+    {
+      "matches": ["https://live.eplus.jp/*"],
+      "js": ["content_scripts/index.js"],
+      "css": ["content_scripts/style.css"],
+      "run_at": "document_idle"
+    }
   ],
-  "host_permissions": [
-    "https://live.eplus.jp/*"
-  ],
-  "background": {
-    "service_worker": "service_worker/index.js"
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "streaming-plus-sequencer@windyakin.net"
+    }
   }
 }

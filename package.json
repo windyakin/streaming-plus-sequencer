@@ -3,14 +3,14 @@
   "version": "1.2.1",
   "private": true,
   "scripts": {
-    "build": "ts-node -T build.ts --firefox --chrome",
-    "build:firefox": "ts-node -T build.ts --firefox",
-    "build:chrome": "ts-node -T build.ts --chrome",
+    "build": "ts-node -T build.ts",
+    "build:watch": "ts-node -T build.ts --watch",
     "lint": "eslint",
-    "run:firefox": "web-ext run -s dist-firefox",
-    "run:chrome": "web-ext run -s dist-chrome -t chromium",
-    "package:firefox": "web-ext build -s dist-firefox --overwrite-dest",
-    "package:chrome": "web-ext build -s dist-chrome --overwrite-dest"
+    "dev:firefox": "run-p build:watch ext:firefox",
+    "dev:chrome": "run-p build:watch ext:chrome",
+    "ext:firefox": "web-ext run",
+    "ext:chrome": "web-ext run -t chromium",
+    "package": "web-ext build"
   },
   "devDependencies": {
     "@types/mustache": "4.2.6",
@@ -23,6 +23,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.0.0",
     "prettier": "3.8.0",
+    "npm-run-all2": "^8.0.4",
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "web-ext": "9.2.0",
