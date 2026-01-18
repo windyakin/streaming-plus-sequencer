@@ -1,5 +1,16 @@
 console.log('Hello streaming-plus-sequencer');
 
+const formatTime = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  if (hours > 0) {
+    return `${hours}:${('0' + minutes).slice(-2)}:${('0' + secs).slice(-2)}`;
+  }
+  return `${minutes}:${('0' + secs).slice(-2)}`;
+};
+
 const initSequencer = () => {
   const player = document.getElementById('video0');
   const video = document.getElementById('video0_html5_api') as HTMLVideoElement;
@@ -20,31 +31,59 @@ const initSequencer = () => {
     return;
   }
 
+  const controlDisplayContainer = document.createElement('div');
+  controlDisplayContainer.setAttribute('class', 'video-overlay-display-container');
+  player.appendChild(controlDisplayContainer);
+
   const controlDisplay = document.createElement('div');
   controlDisplay.setAttribute('class', 'video-overlay-display');
 
-  player.appendChild(controlDisplay);
+  const controlTextElement = document.createElement('div');
+  controlTextElement.setAttribute('class', 'video-overlay-display-text');
+
+  controlDisplayContainer.appendChild(controlDisplay);
+  controlDisplayContainer.appendChild(controlTextElement);
 
   const startAnimation = () => {
     controlDisplay.classList.remove('video-overlay-display-animation');
+    controlTextElement.classList.remove('video-overlay-display-animation');
     window.requestAnimationFrame(function () {
       window.requestAnimationFrame(function () {
         controlDisplay.classList.add('video-overlay-display-animation');
+        controlTextElement.classList.add('video-overlay-display-animation');
       });
     });
   };
 
   const skip = () => {
     video.currentTime = video.currentTime + 10;
-    controlDisplay.classList.remove('video-overlay-display-forward');
+    controlDisplay.classList.remove('video-overlay-display-forward', 'video-overlay-display-volume-up', 'video-overlay-display-volume-down');
     controlDisplay.classList.add('video-overlay-display-skip');
+    controlTextElement.textContent = formatTime(video.currentTime);
     startAnimation();
   };
 
   const forward = () => {
     video.currentTime = video.currentTime - 10;
-    controlDisplay.classList.remove('video-overlay-display-skip');
+    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-volume-up', 'video-overlay-display-volume-down');
     controlDisplay.classList.add('video-overlay-display-forward');
+    controlTextElement.textContent = formatTime(video.currentTime);
+    startAnimation();
+  };
+
+  const volumeUp = () => {
+    video.volume = Math.min(1, video.volume + 0.1);
+    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-forward', 'video-overlay-display-volume-down');
+    controlDisplay.classList.add('video-overlay-display-volume-up');
+    controlTextElement.textContent = `${Math.round(video.volume * 100)}%`;
+    startAnimation();
+  };
+
+  const volumeDown = () => {
+    video.volume = Math.max(0, video.volume - 0.1);
+    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-forward', 'video-overlay-display-volume-up');
+    controlDisplay.classList.add('video-overlay-display-volume-down');
+    controlTextElement.textContent = `${Math.round(video.volume * 100)}%`;
     startAnimation();
   };
 
@@ -74,6 +113,12 @@ const initSequencer = () => {
       }
       if (event.code === 'ArrowLeft') {
         forward();
+      }
+      if (event.code === 'ArrowUp') {
+        volumeUp();
+      }
+      if (event.code === 'ArrowDown') {
+        volumeDown();
       }
       if (event.code === 'Space') {
         if (video.paused) {
