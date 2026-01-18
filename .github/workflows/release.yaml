@@ -14,19 +14,17 @@ jobs:
           - chrome
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18.x
+          node-version: 22.x
 
       - run: npm ci
 
       - run: npm run build:${{ matrix.browser }}
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: streaming-plus-sequencer-${{ matrix.browser }}
           path: dist-${{ matrix.browser }}
