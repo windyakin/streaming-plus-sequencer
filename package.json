@@ -3,14 +3,11 @@
   "version": "1.2.1",
   "private": true,
   "scripts": {
-    "build": "ts-node -T build.ts --firefox --chrome",
-    "build:firefox": "ts-node -T build.ts --firefox",
-    "build:chrome": "ts-node -T build.ts --chrome",
+    "build": "ts-node -T build.ts",
     "lint": "eslint",
-    "run:firefox": "web-ext run -s dist-firefox",
-    "run:chrome": "web-ext run -s dist-chrome -t chromium",
-    "package:firefox": "web-ext build -s dist-firefox --overwrite-dest",
-    "package:chrome": "web-ext build -s dist-chrome --overwrite-dest"
+    "dev:firefox": "web-ext run",
+    "dev:chrome": "web-ext run -t chromium",
+    "package": "web-ext build"
   },
   "devDependencies": {
     "@types/mustache": "4.2.6",

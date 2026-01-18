@@ -6,13 +6,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        browser:
-          - firefox
-          - chrome
-
     steps:
       - uses: actions/checkout@v6
 
@@ -22,9 +15,9 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build:${{ matrix.browser }}
+      - run: npm run build
 
       - uses: actions/upload-artifact@v6
         with:
-          name: streaming-plus-sequencer-${{ matrix.browser }}
-          path: dist-${{ matrix.browser }}
+          name: streaming-plus-sequencer
+          path: dist
