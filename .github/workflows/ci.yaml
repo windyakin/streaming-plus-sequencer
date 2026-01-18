@@ -10,12 +10,11 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20.x
+          node-version: 22.x
 
       - run: npm ci
 
@@ -30,14 +29,12 @@ jobs:
           - firefox
           - chrome
         node:
-          - 18.x
-          - 20.x
+          - 22.x
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
 
