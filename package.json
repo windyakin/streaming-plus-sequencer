@@ -6,7 +6,7 @@
     "build": "ts-node -T build.ts --firefox --chrome",
     "build:firefox": "ts-node -T build.ts --firefox",
     "build:chrome": "ts-node -T build.ts --chrome",
-    "lint": "eslint --ext .ts,.js,.vue src",
+    "lint": "eslint",
     "run:firefox": "web-ext run -s dist-firefox",
     "run:chrome": "web-ext run -s dist-chrome -t chromium",
     "package:firefox": "web-ext build -s dist-firefox --overwrite-dest",
