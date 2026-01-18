@@ -1,16 +1,5 @@
 console.log('Hello streaming-plus-sequencer');
 
-const formatTime = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-
-  if (hours > 0) {
-    return `${hours}:${('0' + minutes).slice(-2)}:${('0' + secs).slice(-2)}`;
-  }
-  return `${minutes}:${('0' + secs).slice(-2)}`;
-};
-
 const initSequencer = () => {
   const player = document.getElementById('video0');
   const video = document.getElementById('video0_html5_api') as HTMLVideoElement;
@@ -44,11 +33,24 @@ const initSequencer = () => {
   controlDisplayContainer.appendChild(controlDisplay);
   controlDisplayContainer.appendChild(controlTextElement);
 
-  const startAnimation = () => {
+  const overlayIconClasses = [
+    'video-overlay-display-skip',
+    'video-overlay-display-forward',
+    'video-overlay-display-volume-up',
+    'video-overlay-display-volume-down',
+  ] as const;
+
+  type OverlayIconClass = (typeof overlayIconClasses)[number];
+
+  const showOverlay = (iconClass: OverlayIconClass, text: string | null = null) => {
+    controlDisplay.classList.remove(...overlayIconClasses);
+    controlDisplay.classList.add(iconClass);
+    controlTextElement.textContent = text || '';
+    // アニメーションをリセットして再開
     controlDisplay.classList.remove('video-overlay-display-animation');
     controlTextElement.classList.remove('video-overlay-display-animation');
-    window.requestAnimationFrame(function () {
-      window.requestAnimationFrame(function () {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
         controlDisplay.classList.add('video-overlay-display-animation');
         controlTextElement.classList.add('video-overlay-display-animation');
       });
@@ -57,35 +59,24 @@ const initSequencer = () => {
 
   const skip = () => {
     video.currentTime = video.currentTime + 10;
-    controlDisplay.classList.remove('video-overlay-display-forward', 'video-overlay-display-volume-up', 'video-overlay-display-volume-down');
-    controlDisplay.classList.add('video-overlay-display-skip');
-    controlTextElement.textContent = formatTime(video.currentTime);
-    startAnimation();
+    showOverlay('video-overlay-display-skip');
   };
 
   const forward = () => {
     video.currentTime = video.currentTime - 10;
-    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-volume-up', 'video-overlay-display-volume-down');
-    controlDisplay.classList.add('video-overlay-display-forward');
-    controlTextElement.textContent = formatTime(video.currentTime);
-    startAnimation();
+    showOverlay('video-overlay-display-forward');
   };
 
   const volumeUp = () => {
     video.volume = Math.min(1, video.volume + 0.1);
-    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-forward', 'video-overlay-display-volume-down');
-    controlDisplay.classList.add('video-overlay-display-volume-up');
-    controlTextElement.textContent = `${Math.round(video.volume * 100)}%`;
-    startAnimation();
+    showOverlay('video-overlay-display-volume-up', `${Math.round(video.volume * 100)}%`);
   };
 
   const volumeDown = () => {
     video.volume = Math.max(0, video.volume - 0.1);
-    controlDisplay.classList.remove('video-overlay-display-skip', 'video-overlay-display-forward', 'video-overlay-display-volume-up');
-    controlDisplay.classList.add('video-overlay-display-volume-down');
-    controlTextElement.textContent = `${Math.round(video.volume * 100)}%`;
-    startAnimation();
+    showOverlay('video-overlay-display-volume-down', `${Math.round(video.volume * 100)}%`);
   };
+
 
   const controlBarElements = document.getElementsByClassName('vjs-control-bar');
   const volumeControllerElements = document.getElementsByClassName('vjs-volume-panel');
