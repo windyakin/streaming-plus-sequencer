@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "build": "ts-node -T build.ts",
+    "build:watch": "ts-node -T build.ts --watch",
     "lint": "eslint",
-    "dev:firefox": "web-ext run",
-    "dev:chrome": "web-ext run -t chromium",
+    "dev:firefox": "run-p build:watch ext:firefox",
+    "dev:chrome": "run-p build:watch ext:chrome",
+    "ext:firefox": "web-ext run",
+    "ext:chrome": "web-ext run -t chromium",
     "package": "web-ext build"
   },
   "devDependencies": {
@@ -20,6 +23,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.0.0",
     "prettier": "3.8.0",
+    "npm-run-all2": "^8.0.4",
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "web-ext": "9.2.0",
