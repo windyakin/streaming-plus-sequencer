@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 18.x
 
-      - run: yarn
+      - run: npm ci
 
-      - run: yarn build:${{ matrix.browser }}
+      - run: npm run build:${{ matrix.browser }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
