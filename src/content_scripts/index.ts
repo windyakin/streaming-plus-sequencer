@@ -9,11 +9,12 @@ const initSequencer = () => {
     return;
   }
 
-  // ライブ配信の場合は何もしない
-  if (player.classList.contains('vjs-live')) {
-    console.log('This page has live streaming video');
-    return;
-  }
+  // ライブ配信の場合は表示したくないのだが、バグでライブ配信のときも表示されていたので、
+  // 一旦表示する方向に変更（将来的にオプションで切り替えられるようにするかも）
+  // if (player.classList.contains('vjs-live')) {
+  //   console.log('This page has live streaming video');
+  //   return;
+  // }
 
   // 既に初期化済みの場合はスキップ
   if (document.querySelector('.sps-button')) {
