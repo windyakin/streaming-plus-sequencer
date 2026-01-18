@@ -24,7 +24,7 @@ jobs:
 
       - run: npm run build:${{ matrix.browser }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: streaming-plus-sequencer-${{ matrix.browser }}
           path: dist-${{ matrix.browser }}
