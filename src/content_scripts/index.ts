@@ -88,8 +88,9 @@ const initSequencer = () => {
     }
   };
 
-  // シーク中はplay/pauseオーバーレイを表示しない
+  // シーク中・動画終了時はplay/pauseオーバーレイを表示しない
   let isSeeking = false;
+  let isEnded = false;
   let pendingPlayPauseTimer: number | null = null;
 
   const cancelPendingPlayPause = () => {
@@ -112,8 +113,14 @@ const initSequencer = () => {
     }, 50);
   });
 
+  video.addEventListener('ended', () => {
+    isEnded = true;
+    cancelPendingPlayPause();
+  });
+
   // 動画の再生/一時停止イベントをリッスン
   video.addEventListener('play', () => {
+    isEnded = false;
     if (isSeeking) return;
     cancelPendingPlayPause();
     pendingPlayPauseTimer = window.setTimeout(() => {
@@ -125,10 +132,10 @@ const initSequencer = () => {
   });
 
   video.addEventListener('pause', () => {
-    if (isSeeking) return;
+    if (isSeeking || isEnded) return;
     cancelPendingPlayPause();
     pendingPlayPauseTimer = window.setTimeout(() => {
-      if (!isSeeking) {
+      if (!isSeeking && !isEnded) {
         showOverlay('video-overlay-display-pause');
       }
       pendingPlayPauseTimer = null;
