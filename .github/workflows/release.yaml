@@ -2,12 +2,20 @@ name: release
 
 on:
   release:
+    types: [published]
 
 jobs:
   release:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+
+      - name: Sync version from tag
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+          npm pkg set version="$VERSION"
+          jq --arg v "$VERSION" '.version = $v' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
 
       - uses: actions/setup-node@v6
         with:
@@ -17,7 +25,14 @@ jobs:
 
       - run: npm run build
 
+      - run: npm run package
+
       - uses: actions/upload-artifact@v6
         with:
           name: streaming-plus-sequencer
-          path: dist
+          path: web-ext-artifacts/streaming-plus-sequencer-*.zip
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" web-ext-artifacts/streaming-plus-sequencer-*.zip
