@@ -23,7 +23,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.0.0",
     "prettier": "3.8.1",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "web-ext": "9.2.0",
